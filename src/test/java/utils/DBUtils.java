@@ -6,14 +6,16 @@ import aquality.selenium.core.utilities.JsonSettingsFile;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 public class DBUtils {
 
-    private static ISettingsFile jsonSettings = new JsonSettingsFile("testData.json");
+    private static final ISettingsFile jsonSettings = new JsonSettingsFile("config.json");
 
     private static final String url = jsonSettings.getValue("/urlToDB").toString();
     private static final String user = jsonSettings.getValue("/DBUser").toString();
@@ -23,78 +25,36 @@ public class DBUtils {
     private static Statement statement;
     private static ResultSet resultSet;
 
-    //сделала 3 однотипных метода по созданию заполнению таблиц информацией из БД в зависимости от количества столбцов,
-    // т.к. не смогла придумать единый алгоритм по их заполнению
-    //в частности как организовать создание ArrayLists firstColumn, secondColumn и т.д., в которые записываются данные из столбцов таблицы в БД
-    public static String[][] performRequestForResponseInThreeColumnTable(String query, Logger logger) {
+    public static String[][] performRequest(String query, Logger logger) {
+
+        PreparedStatement preparedStatement;
 
         String[][] responseInTableType = null;
 
         try {
             connection = DriverManager.getConnection(url, user, password);
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(query);
+            preparedStatement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            resultSet = preparedStatement.executeQuery();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
-            ArrayList<String> firstColumn = new ArrayList<>();
-            ArrayList<String> secondColumn = new ArrayList<>();
-            ArrayList<String> thirdColumn = new ArrayList<>();
-
-            while (resultSet.next()) {
-                firstColumn.add(resultSet.getString(1));
-                secondColumn.add(resultSet.getString(2));
-                thirdColumn.add(resultSet.getString(3));
-            }
-
-            responseInTableType = new String[firstColumn.size()][3];
+            resultSet.last();
+            int rows = resultSet.getRow();
+            int columns = resultSetMetaData.getColumnCount();
+            responseInTableType = new String[rows][columns];
+            resultSet.first();
 
             for (int i = 0; i < responseInTableType.length; i++) {
-                responseInTableType[i][0] = firstColumn.get(i);
-                responseInTableType[i][1] = secondColumn.get(i);
-                responseInTableType[i][2] = thirdColumn.get(i);
+                for (int j = 0; j < resultSetMetaData.getColumnCount(); j++) {
+                    responseInTableType[i][j] = resultSet.getString(j + 1);
+                }
+                resultSet.next();
             }
+
         } catch (SQLException sqlException) {
             logger.info("Request to DB isn't performed because of " + sqlException);
         } finally {
             try {
                 connection.close();
-                statement.close();
-                resultSet.close();
-            } catch (SQLException sqlException) {
-                logger.info("Connection, Statement or ResultSet connection wasn't closed because of " + sqlException);
-            }
-        }
-        return responseInTableType;
-    }
-
-    public static String[][] performRequestForResponseInTwoColumnTable(String query, Logger logger) {
-
-        String[][] responseInTableType = null;
-
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(query);
-
-            ArrayList<String> firstColumn = new ArrayList<>();
-            ArrayList<String> secondColumn = new ArrayList<>();
-
-            while (resultSet.next()) {
-                firstColumn.add(resultSet.getString(1));
-                secondColumn.add(resultSet.getString(2));
-            }
-
-            responseInTableType = new String[firstColumn.size()][2];
-
-            for (int i = 0; i < responseInTableType.length; i++) {
-                responseInTableType[i][0] = firstColumn.get(i);
-                responseInTableType[i][1] = secondColumn.get(i);
-            }
-        } catch (SQLException sqlException) {
-            logger.info("Request to DB isn't performed because of " + sqlException);
-        } finally {
-            try {
-                connection.close();
-                statement.close();
                 resultSet.close();
             } catch (SQLException sqlException) {
                 logger.info("Connection, Statement or ResultSet connection wasn't closed because of " + sqlException);

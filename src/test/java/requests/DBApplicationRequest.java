@@ -6,17 +6,17 @@ import utils.DBUtils;
 public class DBApplicationRequest {
 
     public static void getMinimalTimeOfWorkForEachTest(String query, Logger logger, int amountOfColumns) {
-        String[][] tableWithMinTimeOfTestWork = DBUtils.performRequestForResponseInThreeColumnTable(query, logger);
+        String[][] tableWithMinTimeOfTestWork = DBUtils.performRequest(query, logger);
         logResponseTable(tableWithMinTimeOfTestWork, logger, amountOfColumns);
     }
 
     public static void getProjectsWithAmountOfUniqueTests(String query, Logger logger, int amountOfColumns) {
-        String[][] tableOfProjectsWithAmountOfUniqueTest = DBUtils.performRequestForResponseInTwoColumnTable(query, logger);
+        String[][] tableOfProjectsWithAmountOfUniqueTest = DBUtils.performRequest(query, logger);
         logResponseTable(tableOfProjectsWithAmountOfUniqueTest, logger, amountOfColumns);
     }
 
     public static void getTestsAppliedBeforeCertainDate(String query, Logger logger, int amountOfColumns) {
-        String[][] tableOfTestsAppliedBeforeCertainDate = DBUtils.performRequestForResponseInThreeColumnTable(query, logger);
+        String[][] tableOfTestsAppliedBeforeCertainDate = DBUtils.performRequest(query, logger);
         logResponseTable(tableOfTestsAppliedBeforeCertainDate, logger, amountOfColumns);
     }
 

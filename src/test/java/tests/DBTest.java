@@ -24,11 +24,16 @@ public class DBTest{
 
     @Test
     public void getTestsAppliedBeforeCertainDate(){
-        DBApplicationRequest.getTestsAppliedBeforeCertainDate(jsonSettings.getValue("/getTestsAppliedBeforeCertainDate").toString(), logger, 3);
+        DBApplicationRequest.getTestsAppliedBeforeCertainDate(String.format(jsonSettings.getValue("/getTestsAppliedBeforeCertainDate").toString(),
+                        jsonSettings.getValue("/dateTestsAppliedBefore").toString()),
+                logger, 3);
     }
 
     @Test
     public void getAmountOfTestsAppliedOnCertainBrowsers(){
-        DBApplicationRequest.getAmountOfTestsAppliedOnCertainBrowsers(jsonSettings.getValue("/getAmountOfTestsAppliedOnCertainBrowsers").toString(), logger);
+        DBApplicationRequest.getAmountOfTestsAppliedOnCertainBrowsers(String.format(jsonSettings.getValue("/getAmountOfTestsAppliedOnCertainBrowsers").toString(),
+                jsonSettings.getValue("/chromeBrowser"),
+                jsonSettings.getValue("/firefoxBrowser")),
+                logger);
     }
 }

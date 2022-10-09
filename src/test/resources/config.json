@@ -1,0 +1,5 @@
+{
+  "urlToDB": "jdbc:mysql://localhost:3306/union_reporting",
+  "DBUser": "",
+  "DBPassword": ""
+}

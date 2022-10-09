@@ -1,11 +1,9 @@
 {
-  "urlToDB": "jdbc:mysql://localhost:3306/union_reporting",
-  "DBUser": "root",
-  "DBPassword": "password",
-
-
   "getMinWorkTimeForEachTest": "SELECT project.name, test.name, test.end_time - test.start_time FROM project JOIN test ON project.id = test.project_id ORDER BY project.name, test.name;",
   "getProjectsWithAmountOfUniqueTests": "SELECT project.name, COUNT(test.id) FROM project JOIN test ON project.id = test.project_id GROUP BY project.name;",
-  "getTestsAppliedBeforeCertainDate": "SELECT project.name, test.name, test.end_time FROM project JOIN test ON project.id = test.project_id WHERE test.end_time > \"2015-11-07\" ORDER BY project.name;",
-  "getAmountOfTestsAppliedOnCertainBrowsers": "SELECT COUNT(*) AS BROWSERS FROM test WHERE test.browser = 'Chrome' UNION  SELECT COUNT(*) FROM test WHERE test.browser = 'Firefox';"
+  "getTestsAppliedBeforeCertainDate": "SELECT project.name, test.name, test.end_time FROM project JOIN test ON project.id = test.project_id WHERE test.end_time > %s ORDER BY project.name;",
+  "dateTestsAppliedBefore": "\"2015-11-07\"",
+  "getAmountOfTestsAppliedOnCertainBrowsers": "SELECT COUNT(*) AS BROWSERS FROM test WHERE test.browser = '%s' UNION  SELECT COUNT(*) FROM test WHERE test.browser = '%s';",
+  "chromeBrowser": "Chrome",
+  "firefoxBrowser": "Firefox"
 }
